@@ -1,1 +1,1 @@
-{"root":["./src/index.ts"],"version":"5.9.3"}
+{"root":["./src/index.ts","./src/prisma.config.ts","./src/prisma.ts","./src/routes/admin.ts","./src/routes/course.ts","./src/routes/user.ts"],"version":"5.9.3"}
