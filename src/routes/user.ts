@@ -1,7 +1,8 @@
-import express from "express";
+import express, { Request } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prismaClient from "../prisma.js";
+import { userMiddleware } from "../middlewares/userMIddleware.js";
 
 const router = express.Router();
 
@@ -68,6 +69,26 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.get("/purchases", (req, res) => {});
+router.get("/purchases", userMiddleware, async (req: Request, res) => {
+  const userId = res.id;
+  const token = req.headers.authorization;
+
+  if (!userId || !token) {
+    res.json("access denied");
+  }
+
+  const user = await prismaClient.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    res.json("Please login again to see your purchases");
+    return;
+  }
+
+  res.json("Your purchases");
+});
 
 export default router;
