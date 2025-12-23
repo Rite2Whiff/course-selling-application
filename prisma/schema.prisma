@@ -20,7 +20,7 @@ model User{
 
 model Instructor{
   id   Int  @id @default(autoincrement())
-  email String
+  email String @unique
   password String
   firstName String
   lastName String

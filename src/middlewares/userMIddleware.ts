@@ -13,7 +13,7 @@ export function userMiddleware(
   }
   const decoded = jwt.verify(
     token as string,
-    process.env.JWT_SECRET as string
+    process.env.JWT_SECRET_USER as string
   ) as JwtPayload;
 
   if (!decoded) {
