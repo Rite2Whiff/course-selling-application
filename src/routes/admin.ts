@@ -2,6 +2,7 @@ import express from "express";
 import brcypt from "bcrypt";
 import prismaClient from "../prisma.js";
 import jwt from "jsonwebtoken";
+import { instructorMiddleware } from "../middlewares/instructorMiddleware.js";
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
@@ -72,7 +73,34 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.post("/course", (req, res) => {});
+router.post("/course", instructorMiddleware, async (req, res) => {
+  const instructorId = res.id;
+  const token = req.headers.authorization;
+  const title = req.body.title;
+  const description = req.body.description;
+  const price: number = req.body.price;
+  const imageUrl = req.body.imageUrl;
+
+  if (!instructorId || !token) {
+    res.json("access denied");
+    return;
+  }
+
+  const course = await prismaClient.course.create({
+    data: {
+      title,
+      description,
+      price,
+      imageUrl,
+      instructorId,
+    },
+  });
+
+  res.json({
+    message: "Your course has been successfully created",
+    course,
+  });
+});
 
 router.put("/course", (req, res) => {});
 
