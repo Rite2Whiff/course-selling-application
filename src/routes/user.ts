@@ -71,9 +71,8 @@ router.post("/login", async (req, res) => {
 
 router.get("/purchases", userMiddleware, async (req: Request, res) => {
   const userId = res.id;
-  const token = req.headers.authorization;
 
-  if (!userId || !token) {
+  if (!userId) {
     res.json("access denied");
   }
 
@@ -88,7 +87,16 @@ router.get("/purchases", userMiddleware, async (req: Request, res) => {
     return;
   }
 
-  res.json("Your purchases");
+  const findPurchases = await prismaClient.purchase.findMany({
+    where: {
+      id: user.id,
+    },
+  });
+
+  res.json({
+    message: "Your purchases",
+    findPurchases,
+  });
 });
 
 export default router;
