@@ -30,8 +30,7 @@ model Course{
   title       String
   description String
   price       Int
-  userId      Int
-  user        User   @relation(fields: [userId],references: [id])
+  users       User[]
   adminId     Int
   admin       Admin   @relation(fields: [adminId],references: [id])
   purchase    Purchase?
