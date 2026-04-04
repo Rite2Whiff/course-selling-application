@@ -112,4 +112,108 @@ router.post("/add-course", async (req, res) => {
   });
 });
 
+router.patch("/edit-course", async (req, res) => {
+  const adminId = req.adminId;
+  if (!adminId) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const { title, description, price, courseId } = req.body;
+
+  if (!req.body) {
+    res.status(400).json({
+      message: "Please provide the fields to update",
+    });
+    return;
+  }
+
+  const findCourse = await prisma.course.findFirst({
+    where: {
+      id: courseId,
+    },
+  });
+
+  if (!findCourse) {
+    res.status(404).json({
+      message: "Course not found",
+    });
+    return;
+  }
+
+  const updateCourse = await prisma.course.update({
+    where: {
+      id: courseId,
+    },
+    data: {
+      title: title ? title : findCourse.title,
+      description: description ? description : findCourse.description,
+      price: price ? price : findCourse.price,
+    },
+  });
+
+  res.status(200).json({
+    updateCourse,
+    message: "Your course has been successfully updated",
+  });
+});
+
+router.delete("/delete-course", async (req, res) => {
+  const adminId = req.adminId;
+  if (!adminId) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  const courseId = req.body.courseId;
+
+  if (!courseId) {
+    res.status(404).json({
+      message: "Course not found ",
+    });
+    return;
+  }
+
+  await prisma.course.delete({
+    where: {
+      id: courseId,
+      adminId,
+    },
+  });
+
+  res.status(200).json({
+    message: "Course successfully removed",
+  });
+});
+
+router.get("/course-preview", async (req, res) => {
+  const adminId = req.adminId;
+  if (!adminId) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const courses = await prisma.course.findMany({
+    where: {
+      adminId,
+    },
+  });
+
+  if (!courses) {
+    res.json({
+      message: "No courses found",
+    });
+    return;
+  }
+
+  res.status(200).json({
+    courses,
+  });
+});
+
 export default router;
