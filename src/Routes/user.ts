@@ -2,6 +2,8 @@ import { Router } from "express";
 import { prisma } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { userMiddleware } from "../middleware/userMiddleware";
+import { adminSchema, userSchema } from "../schema";
 
 const router = Router();
 
@@ -15,20 +17,32 @@ router.post("/signup", async (req, res) => {
     return;
   }
 
-  const hashedPassword = await bcrypt.hash(password, 3);
-
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-    },
+  const userInput = userSchema.safeParse({
+    email,
+    password,
+    firstName,
+    lastName,
   });
 
-  res.status(200).json({
-    message: "You have successfully signed up",
-  });
+  if (!userInput.success) {
+    res.status(400).json({
+      message: userInput.error.issues[0]?.message,
+    });
+  } else {
+    const hashedPassword = await bcrypt.hash(password, 3);
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+      },
+    });
+
+    res.status(200).json({
+      message: "You have successfully signed up",
+    });
+  }
 });
 
 router.post("/login", async (req, res) => {
@@ -74,6 +88,33 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.get("/purchases", (req, res) => {});
+router.use(userMiddleware);
+
+router.get("/purchases", async (req, res) => {
+  const userId = req.userId;
+  if (!userId) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const courses = await prisma.purchase.findMany({
+    where: {
+      userId,
+    },
+  });
+
+  if (!courses) {
+    res.json({
+      message: "No courses found",
+    });
+    return;
+  }
+
+  res.status(200).json({
+    courses,
+  });
+});
 
 export default router;

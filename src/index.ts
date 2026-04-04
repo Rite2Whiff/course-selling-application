@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
-import userRouter from "./Routes/user";
-import courseRouter from "./Routes/course";
-import adminRouter from "./Routes/admin";
+import userRouter from "./routes/user";
+import courseRouter from "./routes/course";
+import adminRouter from "./routes/admin";
 
 const app = express();
 app.use(express.json());

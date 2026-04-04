@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { userMiddleware } from "../Middleware/userMiddleware";
+import { userMiddleware } from "../middleware/userMiddleware";
 import { prisma } from "../db";
 
 const router = Router();

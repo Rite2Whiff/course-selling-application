@@ -2,7 +2,8 @@ import { Router } from "express";
 import { prisma } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { adminMiddleware } from "../Middleware/adminMiddleware";
+import { adminMiddleware } from "../middleware/adminMiddleware";
+import { adminSchema } from "../schema";
 
 const router = Router();
 
@@ -16,20 +17,33 @@ router.post("/signup", async (req, res) => {
     return;
   }
 
-  const hashedPassword = await bcrypt.hash(password, 3);
-
-  const admin = await prisma.admin.create({
-    data: {
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-    },
+  const adminInput = adminSchema.safeParse({
+    email,
+    password,
+    firstName,
+    lastName,
   });
 
-  res.status(200).json({
-    message: "You have successfully signed up",
-  });
+  if (!adminInput.success) {
+    res.status(400).json({
+      message: adminInput.error.issues[0]?.message,
+    });
+  } else {
+    const hashedPassword = await bcrypt.hash(password, 3);
+
+    const admin = await prisma.admin.create({
+      data: {
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+      },
+    });
+
+    res.status(200).json({
+      message: "You have successfully signed up",
+    });
+  }
 });
 
 router.post("/login", async (req, res) => {
