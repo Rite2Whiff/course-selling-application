@@ -3,7 +3,7 @@ import { prisma } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { adminMiddleware } from "../middleware/adminMiddleware";
-import { adminSchema } from "../schema";
+import { loginSchema, signupSchema } from "../schema";
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.post("/signup", async (req, res) => {
     return;
   }
 
-  const adminInput = adminSchema.safeParse({
+  const adminInput = signupSchema.safeParse({
     email,
     password,
     firstName,
@@ -56,37 +56,48 @@ router.post("/login", async (req, res) => {
     return;
   }
 
-  const findAdmin = await prisma.admin.findFirst({
-    where: {
-      email,
-    },
+  const adminInput = loginSchema.safeParse({
+    email,
+    password,
   });
 
-  if (!findAdmin) {
-    res.status(404).json({
-      message: "Admin not found",
+  if (!adminInput.success) {
+    res.status(400).json({
+      message: adminInput.error.issues[0]?.message,
     });
-    return;
-  }
-
-  const verifyPassword = await bcrypt.compare(password, findAdmin.password);
-
-  if (!verifyPassword) {
-    res.status(404).json({
-      message: "User not found",
+  } else {
+    const findAdmin = await prisma.admin.findFirst({
+      where: {
+        email,
+      },
     });
-    return;
+
+    if (!findAdmin) {
+      res.status(404).json({
+        message: "Admin not found",
+      });
+      return;
+    }
+
+    const verifyPassword = await bcrypt.compare(password, findAdmin.password);
+
+    if (!verifyPassword) {
+      res.status(404).json({
+        message: "User not found",
+      });
+      return;
+    }
+
+    const token = jwt.sign(
+      { adminId: findAdmin.id },
+      process.env.JWT_ADMIN_SECRET as string,
+    );
+
+    res.status(200).json({
+      token,
+      message: "You have successfully logged in",
+    });
   }
-
-  const token = jwt.sign(
-    { adminId: findAdmin.id },
-    process.env.JWT_ADMIN_SECRET as string,
-  );
-
-  res.status(200).json({
-    token,
-    message: "You have successfully logged in",
-  });
 });
 
 router.use(adminMiddleware);

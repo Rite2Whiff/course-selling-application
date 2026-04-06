@@ -1,5 +1,5 @@
 export function Signup() {
-  return <h1>Login</h1>;
+  return <h1 className="text-2xl">Signup</h1>;
 }
 
 export default Signup;

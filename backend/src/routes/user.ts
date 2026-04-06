@@ -3,7 +3,7 @@ import { prisma } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { userMiddleware } from "../middleware/userMiddleware";
-import { adminSchema, userSchema } from "../schema";
+import { loginSchema, signupSchema } from "../schema";
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.post("/signup", async (req, res) => {
     return;
   }
 
-  const userInput = userSchema.safeParse({
+  const userInput = signupSchema.safeParse({
     email,
     password,
     firstName,
@@ -55,37 +55,48 @@ router.post("/login", async (req, res) => {
     return;
   }
 
-  const findUser = await prisma.user.findFirst({
-    where: {
-      email,
-    },
+  const userInput = loginSchema.safeParse({
+    email,
+    password,
   });
 
-  if (!findUser) {
-    res.status(404).json({
-      message: "User not found",
+  if (!userInput.success) {
+    res.status(400).json({
+      message: userInput.error.issues[0]?.message,
     });
-    return;
-  }
-
-  const verifyPassword = await bcrypt.compare(password, findUser.password);
-
-  if (!verifyPassword) {
-    res.status(404).json({
-      message: "User not found",
+  } else {
+    const findUser = await prisma.user.findFirst({
+      where: {
+        email,
+      },
     });
-    return;
+
+    if (!findUser) {
+      res.status(404).json({
+        message: "User not found",
+      });
+      return;
+    }
+
+    const verifyPassword = await bcrypt.compare(password, findUser.password);
+
+    if (!verifyPassword) {
+      res.status(404).json({
+        message: "User not found",
+      });
+      return;
+    }
+
+    const token = jwt.sign(
+      { userId: findUser.id },
+      process.env.JWT_USER_SECRET as string,
+    );
+
+    res.status(200).json({
+      token,
+      message: "You have successfully logged in",
+    });
   }
-
-  const token = jwt.sign(
-    { userId: findUser.id },
-    process.env.JWT_USER_SECRET as string,
-  );
-
-  res.status(200).json({
-    token,
-    message: "You have successfully logged in",
-  });
 });
 
 router.use(userMiddleware);
