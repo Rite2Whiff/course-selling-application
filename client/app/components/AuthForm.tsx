@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { usePathname } from "next/navigation";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const signupSchema = z.object({
   firstname: z
@@ -49,29 +51,49 @@ const loginSchema = z.object({
   password: z.string().min(3).max(10),
 });
 
-type SignupFormValues = z.infer<typeof signupSchema>;
-type LoginFormValues = z.infer<typeof loginSchema>;
-type FormSchema = SignupFormValues | LoginFormValues;
+type FormSchema = {
+  firstname?: string;
+  lastname?: string;
+  email: string;
+  password: string;
+};
 
 export function AuthForm() {
   const pathname = usePathname();
+  const { signup } = useAuth();
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(pathname === "/login" ? loginSchema : signupSchema),
-    defaultValues: {
-      firstname: "",
-      lastname: "",
-      email: "",
-      password: "",
-    },
+    defaultValues:
+      pathname === "/login"
+        ? {
+            email: "",
+            password: "",
+          }
+        : {
+            email: "",
+            password: "",
+            firstname: "",
+            lastname: "",
+          },
   });
 
-  function onSubmit(data: FormSchema) {
+  async function onSubmit(data: FormSchema) {
+    if (pathname !== "/login") {
+      await signup(data);
+      console.log("Signed up Successfully");
+    } else {
+      const { email, password } = data;
+      const response = await axios.post(
+        "http://localhost:3001/api/v1/user/login",
+        {
+          email,
+          password,
+        },
+      );
+      localStorage.setItem("token", response.data.token);
+    }
     toast("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
       position: "bottom-right",
       classNames: {
         content: "flex flex-col gap-2",
@@ -80,7 +102,6 @@ export function AuthForm() {
         "--border-radius": "calc(var(--radius)  + 4px)",
       } as React.CSSProperties,
     });
-    console.log("hello world");
   }
 
   return (
@@ -185,11 +206,7 @@ export function AuthForm() {
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>
-          <Button
-            type="submit"
-            form="form-rhf-input"
-            onSubmit={() => console.log("hello world")}
-          >
+          <Button type="submit" form="form-rhf-input">
             {`${pathname === "/login" ? "Login" : "Signup"}`}
           </Button>
         </Field>

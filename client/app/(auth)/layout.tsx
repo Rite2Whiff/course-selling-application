@@ -1,3 +1,4 @@
+import { AuthProvider } from "../context/AuthContext";
 import { AuthForm } from "../components/AuthForm";
 
 export default function AuthLayout({
@@ -8,8 +9,10 @@ export default function AuthLayout({
   return (
     <section className="min-w-3xl ">
       <div className="flex flex-col items-center gap-5">
-        {children}
-        <AuthForm />
+        <AuthProvider>
+          {children}
+          <AuthForm />
+        </AuthProvider>
       </div>
     </section>
   );
