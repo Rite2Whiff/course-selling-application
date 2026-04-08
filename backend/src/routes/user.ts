@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../db";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { userMiddleware } from "../middleware/userMiddleware";
 import { loginSchema, signupSchema } from "../schema";
 
@@ -41,6 +41,7 @@ router.post("/signup", async (req, res) => {
 
     res.status(200).json({
       message: "You have successfully signed up",
+      user,
     });
   }
 });
@@ -95,8 +96,38 @@ router.post("/login", async (req, res) => {
     res.status(200).json({
       token,
       message: "You have successfully logged in",
+      findUser,
     });
   }
+});
+
+router.get("/me", async (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  const decoded = jwt.verify(
+    token,
+    process.env.JWT_USER_SECRET as string,
+  ) as JwtPayload;
+  const userId = decoded.userId;
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+  if (!user) {
+    res.status(404).json({
+      message: "User not found",
+    });
+    return;
+  }
+  res.status(200).json({
+    user,
+  });
 });
 
 router.use(userMiddleware);

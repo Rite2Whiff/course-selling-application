@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../db";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { adminMiddleware } from "../middleware/adminMiddleware";
 import { loginSchema, signupSchema } from "../schema";
 
@@ -51,7 +51,7 @@ router.post("/login", async (req, res) => {
 
   if (!email || !password) {
     res.status(400).json({
-      error: "Please provide valid user credentials",
+      error: "Please provide valid  credentials",
     });
     return;
   }
@@ -83,7 +83,7 @@ router.post("/login", async (req, res) => {
 
     if (!verifyPassword) {
       res.status(404).json({
-        message: "User not found",
+        message: "Admin not found",
       });
       return;
     }
@@ -96,8 +96,38 @@ router.post("/login", async (req, res) => {
     res.status(200).json({
       token,
       message: "You have successfully logged in",
+      findAdmin,
     });
   }
+});
+
+router.get("/me", async (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  const decoded = jwt.verify(
+    token,
+    process.env.JWT_ADMIN_SECRET as string,
+  ) as JwtPayload;
+  const adminId = decoded.adminId;
+  const admin = await prisma.admin.findFirst({
+    where: {
+      id: adminId,
+    },
+  });
+  if (!admin) {
+    res.status(404).json({
+      message: "Admin not found",
+    });
+    return;
+  }
+  res.status(200).json({
+    admin,
+  });
 });
 
 router.use(adminMiddleware);

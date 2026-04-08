@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { usePathname } from "next/navigation";
-import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+
+import { useUserAuth } from "../context/UserAuthContext";
+import { useAdminAut } from "../context/AdminAuthContext";
+import { useEffect } from "react";
 
 const signupSchema = z.object({
   firstname: z
@@ -59,11 +61,21 @@ type FormSchema = {
 };
 
 export function AuthForm() {
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      localStorage.removeItem("token");
+      return;
+    }
+  }, []);
+
   const pathname = usePathname();
-  const { signup } = useAuth();
+  const { userSignup, userLogin } = useUserAuth();
+  const { adminSignup, adminLogin } = useAdminAut();
 
   const form = useForm<FormSchema>({
-    resolver: zodResolver(pathname === "/login" ? loginSchema : signupSchema),
+    resolver: zodResolver(
+      pathname.includes("/login") ? loginSchema : signupSchema,
+    ),
     defaultValues:
       pathname === "/login"
         ? {
@@ -79,19 +91,19 @@ export function AuthForm() {
   });
 
   async function onSubmit(data: FormSchema) {
-    if (pathname !== "/login") {
-      await signup(data);
-      console.log("Signed up Successfully");
+    if (pathname.includes("/user")) {
+      if (pathname.includes("/signup")) {
+        await userSignup(data);
+      } else {
+        await userLogin(data);
+        console.log("you have successfully logged in");
+      }
     } else {
-      const { email, password } = data;
-      const response = await axios.post(
-        "http://localhost:3001/api/v1/user/login",
-        {
-          email,
-          password,
-        },
-      );
-      localStorage.setItem("token", response.data.token);
+      if (pathname.includes("/admin")) {
+        await adminSignup(data);
+      } else {
+        await adminLogin(data);
+      }
     }
     toast("You submitted the following values:", {
       position: "bottom-right",
@@ -112,7 +124,9 @@ export function AuthForm() {
           id="form-rhf-input"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <FieldGroup className={`${pathname === "/login" ? "hidden" : null}`}>
+          <FieldGroup
+            className={`${pathname.includes("/login") ? "hidden" : null}`}
+          >
             <Controller
               name="firstname"
               control={form.control}
@@ -134,13 +148,15 @@ export function AuthForm() {
               )}
             />
           </FieldGroup>
-          <FieldGroup className={`${pathname === "/login" ? "hidden" : null}`}>
+          <FieldGroup
+            className={`${pathname.includes("/login") ? "hidden" : null}`}
+          >
             <Controller
               name="lastname"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-rhf-input-username">
+                  <FieldLabel htmlFor="form-rhf-input-lastname">
                     Lastname
                   </FieldLabel>
                   <Input
@@ -207,7 +223,7 @@ export function AuthForm() {
             Reset
           </Button>
           <Button type="submit" form="form-rhf-input">
-            {`${pathname === "/login" ? "Login" : "Signup"}`}
+            {`${pathname.includes("/login") ? "Login" : "Signup"}`}
           </Button>
         </Field>
       </CardFooter>
