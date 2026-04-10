@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import { convertSegmentPathToStaticExportFilename } from "next/dist/shared/lib/segment-cache/segment-value-encoding";
 import {
   createContext,
   useContext,
@@ -22,9 +23,10 @@ type LoginParams = {
 };
 
 type User = {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  password: string;
 };
 
 type UserAuthContextType = {
@@ -32,23 +34,36 @@ type UserAuthContextType = {
   userLogin: (data: LoginParams) => Promise<void>;
   token: string | null;
   user: User | null;
+  isLoading: boolean;
 };
 
 const UserAuthContext = createContext<UserAuthContextType | null>(null);
 
 export function UserAuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("token");
+    }
+    return null;
+  });
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios
-        .get("http://localhost:3001/api/v1/user/me", {
-          headers: { Authorization: token },
-        })
-        .then((res) => setUser(res.data.user));
+    async function fetchUser() {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await axios.get(
+          "http://localhost:3001/api/v1/user/me",
+          {
+            headers: { Authorization: token },
+          },
+        );
+        setUser(response.data.user);
+        setIsLoading(false);
+      }
     }
+    fetchUser();
   }, []);
 
   async function userSignup(data: SignupParams) {
@@ -85,7 +100,9 @@ export function UserAuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <UserAuthContext.Provider value={{ userSignup, userLogin, token, user }}>
+    <UserAuthContext.Provider
+      value={{ userSignup, userLogin, token, user, isLoading }}
+    >
       {children}
     </UserAuthContext.Provider>
   );

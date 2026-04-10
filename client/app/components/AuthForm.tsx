@@ -19,6 +19,7 @@ import { usePathname } from "next/navigation";
 import { useUserAuth } from "../context/UserAuthContext";
 import { useAdminAut } from "../context/AdminAuthContext";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const signupSchema = z.object({
   firstname: z
@@ -61,6 +62,8 @@ type FormSchema = {
 };
 
 export function AuthForm() {
+  const router = useRouter();
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       localStorage.removeItem("token");
@@ -97,12 +100,14 @@ export function AuthForm() {
       } else {
         await userLogin(data);
         console.log("you have successfully logged in");
+        router.push("/dashboard/user");
       }
     } else {
       if (pathname.includes("/admin")) {
         await adminSignup(data);
       } else {
         await adminLogin(data);
+        router.push("/dashboard/admin");
       }
     }
     toast("You submitted the following values:", {

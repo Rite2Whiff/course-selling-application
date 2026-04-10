@@ -1,13 +1,7 @@
 "use client";
 
 import axios from "axios";
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 type SignupParams = {
   firstname?: string;
@@ -39,17 +33,6 @@ const AdminAuthContext = createContext<AdminAuthContextType | null>(null);
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [admin, setAdmin] = useState<Admin | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios
-        .get("http://localhost:3001/api/v1/admin/me", {
-          headers: { Authorization: token },
-        })
-        .then((res) => setAdmin(res.data.admin));
-    }
-  }, []);
 
   async function adminSignup(data: SignupParams) {
     try {
