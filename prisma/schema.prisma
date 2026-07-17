@@ -14,4 +14,32 @@ model User{
   username   String   @unique
   email      String   @unique
   password   String
+  purchases  Purchase[]
+}
+
+model Creator{
+  id        Int       @id        @default(autoincrement())
+  username  String    @unique
+  email     String    
+  password  String    @unique
+  courses   Course[]
+}
+
+model Course{
+  id              Int       @id       @default(autoincrement())
+  title           String
+  description     String
+  price           Int
+  creator         Creator  @relation(fields: [creatorId],references: [id])
+  creatorId       Int
+  purchases       Purchase[]
+}
+
+
+model Purchase{
+  id             Int       @id       @default(autoincrement())
+  user           User      @relation(fields: [userId],references: [id])
+  userId         Int
+  course         Course    @relation(fields:[courseId],references: [id])
+  courseId       Int
 }

@@ -1,13 +1,13 @@
 import Router from "express";
 import { prisma } from "../lib/prisma";
-import { userLoginSchema, userSignupSchema } from "./user.validation";
+import { creatorSignupSchema, creatorLoginSchema } from "./creator.validation";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { userMiddleware } from "./user.middleware";
+import { userMiddleware } from "./creator.middleware";
 const router = Router();
 
 router.post("/signup", async (req, res) => {
-  const result = userSignupSchema.safeParse(req.body);
+  const result = creatorSignupSchema.safeParse(req.body);
   if (!result.success) {
     res.status(400).json({
       error: result.error,
@@ -16,7 +16,7 @@ router.post("/signup", async (req, res) => {
   }
   const { username, email, password } = result.data;
   const hashedPassword = await bcrypt.hash(password, 3);
-  await prisma.user.create({
+  await prisma.creator.create({
     data: {
       username,
       email,
@@ -24,12 +24,12 @@ router.post("/signup", async (req, res) => {
     },
   });
   res.status(200).json({
-    message: "User signed up successfully",
+    message: "Creator signed up successfully",
   });
 });
 
 router.post("/login", async (req, res) => {
-  const result = userLoginSchema.safeParse(req.body);
+  const result = creatorLoginSchema.safeParse(req.body);
   if (!result.success) {
     res.status(400).json({
       error: result.error,
@@ -37,20 +37,20 @@ router.post("/login", async (req, res) => {
     return;
   }
   const { username, password } = result.data;
-  const findUser = await prisma.user.findUnique({
+  const findCreator = await prisma.creator.findUnique({
     where: {
       username,
     },
   });
-  if (!findUser) {
+  if (!findCreator) {
     res.status(401).json({
       message: "Invalid username or password",
     });
     return;
   }
 
-  const verifyUser = await bcrypt.compare(password, findUser.password);
-  if (!verifyUser) {
+  const verifyCreator = await bcrypt.compare(password, findCreator.password);
+  if (!verifyCreator) {
     res.status(401).json({
       message: "Invalid username or password",
     });
@@ -58,8 +58,8 @@ router.post("/login", async (req, res) => {
   }
 
   const token = jwt.sign(
-    { userId: findUser.id, username: findUser.username },
-    process.env.jwtUser as string,
+    { userId: findCreator.id, username: findCreator.username },
+    process.env.jwtCreator as string,
   );
 
   res.status(200).json({
@@ -67,8 +67,12 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.get("/purchases", userMiddleware, (req, res) => {
-  const userId = req.userId;
-});
+router.post("/course", (req, res) => {});
+
+router.patch("/course/:courseId", (req, res) => {});
+
+router.delete("/course/:courseId", (req, res) => {});
+
+router.get("/courses", (req, res) => {});
 
 export default router;
