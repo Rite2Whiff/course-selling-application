@@ -23,6 +23,6 @@ export function userMiddleware(
     });
     return;
   }
-  req.userId = decoded.creatorId;
+  req.creatorId = decoded.creatorId;
   next();
 }
