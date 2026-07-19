@@ -90,10 +90,16 @@ router.post("/course", userMiddleware, async (req, res) => {
 
 router.patch("/course/:courseId", async (req, res) => {
   const creatorId = req.creatorId;
-
-  const course = await prisma.course.findUnique({
+  const { title, description, price } = req.body;
+  const course = await prisma.course.updateMany({
     where: {
       id: Number(req.params.courseId),
+      creatorId,
+    },
+    data: {
+      title,
+      description,
+      price,
     },
   });
 
@@ -104,33 +110,31 @@ router.patch("/course/:courseId", async (req, res) => {
     return;
   }
 
-  if (course.creatorId !== creatorId) {
-    res.status(403).json({
-      message: "You are not authorized to edit this course",
+  res.status(200).json({
+    message: "Course successfully edited",
+    course,
+  });
+});
+
+router.delete("/course/:courseId", async (req, res) => {
+  const creatorId = req.creatorId;
+  const course = await prisma.course.deleteMany({
+    where: {
+      id: Number(req.params.courseId),
+      creatorId,
+    },
+  });
+  if (!course) {
+    res.status(404).json({
+      message: "Course not found",
     });
     return;
   }
 
-  const { title, description, price } = req.body;
-
-  const updateCourse = await prisma.course.update({
-    where: {
-      id: creatorId,
-    },
-    data: {
-      title,
-      description,
-      price,
-    },
-  });
-
   res.status(200).json({
-    message: "Your course has been successfully updated",
-    updateCourse,
+    message: "Course deleted",
   });
 });
-
-router.delete("/course/:courseId", (req, res) => {});
 
 router.get("/courses", async (req, res) => {
   const creatorId = req.creatorId;
