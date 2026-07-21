@@ -3,7 +3,7 @@ import { prisma } from "../lib/prisma";
 import { creatorSignupSchema, creatorLoginSchema } from "./creator.validation";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { userMiddleware } from "./creator.middleware";
+import { creatorMiddleware } from "./creator.middleware";
 const router = Router();
 
 router.post("/signup", async (req, res) => {
@@ -67,9 +67,9 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.use(userMiddleware);
+router.use(creatorMiddleware);
 
-router.post("/course", userMiddleware, async (req, res) => {
+router.post("/course", async (req, res) => {
   const creatorId = req.creatorId;
   const { title, description, price } = req.body;
 

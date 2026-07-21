@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export function userMiddleware(
+export function creatorMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
