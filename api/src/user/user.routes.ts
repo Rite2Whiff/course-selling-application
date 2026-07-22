@@ -4,6 +4,7 @@ import { userLoginSchema, userSignupSchema } from "./user.validation";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { userMiddleware } from "./user.middleware";
+import { email } from "zod";
 const router = Router();
 
 router.post("/signup", async (req, res) => {
@@ -63,6 +64,12 @@ router.post("/login", async (req, res) => {
   );
 
   res.status(200).json({
+    message: "Logged in successfully",
+    user: {
+      id: findUser.id,
+      username: findUser.username,
+      email: findUser.email,
+    },
     token,
   });
 });
