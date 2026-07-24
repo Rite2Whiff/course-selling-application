@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { User } from "../types/auth";
 import axios, { AxiosResponse } from "axios";
 
@@ -18,6 +18,19 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    async function checkAuth() {
+      const response = await axios.get("http://localhost:3001/user/me", {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      setUser(response.data.user);
+    }
+
+    checkAuth();
+  }, []);
 
   async function signup(username: string, email: string, password: string) {
     const response = await axios.post("http://localhost:3001/user/signup", {

@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const { login } = useAuth();
+  const router = useRouter();
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -16,6 +19,7 @@ export default function Login() {
     const response = await login(username, password);
     console.log(response.data);
     toast(response.data.message, { position: "top-center" });
+    router.push("/dashboard");
   }
 
   return (
