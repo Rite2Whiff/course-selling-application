@@ -41,6 +41,13 @@ router.post("/login", async (req, res) => {
     where: {
       username,
     },
+    include: {
+      purchases: {
+        include: {
+          course: true,
+        },
+      },
+    },
   });
   if (!findUser) {
     res.status(401).json({
@@ -62,6 +69,8 @@ router.post("/login", async (req, res) => {
     process.env.jwtUser as string,
   );
 
+  const courses = findUser.purchases.map((course) => course);
+
   res.status(200).json({
     message: "Logged in successfully",
     user: {
@@ -69,6 +78,7 @@ router.post("/login", async (req, res) => {
       username: findUser.username,
       email: findUser.email,
     },
+    courses,
     token,
   });
 });
@@ -100,6 +110,13 @@ router.get("/me", userMiddleware, async (req, res) => {
     where: {
       id: decoded.userId,
       username: decoded.username,
+    },
+    include: {
+      purchases: {
+        include: {
+          course: true,
+        },
+      },
     },
   });
 

@@ -1,9 +1,18 @@
 "use client";
 
-import { useAuth } from "../context/AuthContext";
+import Loading from "@/components/loading";
+import { useLoading } from "../context/LoadingContext";
+import { usePathname } from "next/navigation";
+import Courses from "./courses/page";
 
 export default function Dashboard() {
-  const { user } = useAuth();
-  console.log(user);
-  return <h1>hi {user?.username}</h1>;
+  const { loading } = useLoading();
+  const pathname = usePathname();
+
+  if (loading) {
+    return <Loading />;
+  }
+  if (pathname === "/dashboard/courses") {
+    return <Courses />;
+  }
 }

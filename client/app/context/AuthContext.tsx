@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User } from "../types/auth";
 import axios, { AxiosResponse } from "axios";
+import { useLoading } from "./LoadingContext";
 
 type AuthContextType = {
   user: User | null;
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const { setLoading } = useLoading();
 
   useEffect(() => {
     async function checkAuth() {
@@ -27,10 +29,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       });
       setUser(response.data.user);
+      setLoading(false);
     }
-
     checkAuth();
-  }, []);
+  }, [setLoading]);
 
   async function signup(username: string, email: string, password: string) {
     const response = await axios.post("http://localhost:3001/user/signup", {

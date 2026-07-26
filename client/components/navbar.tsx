@@ -11,7 +11,7 @@ import { Button } from "./ui/button";
 
 export default function Navbar() {
   return (
-    <header className=" p-3 flex items-center justify-between border-b-2 border-black">
+    <header className=" py-3 px-20 flex items-center justify-between border-b-2 border-black">
       <div>
         <Link href="#" className="block flex gap-2">
           <GraduationCap />
@@ -43,8 +43,15 @@ export default function Navbar() {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex gap-3">
-        <Button variant={"outline"}>Sign up</Button>
-        <Button>Login</Button>
+        <Button
+          nativeButton={false}
+          variant={"outline"}
+          render={<Link href="/signup">Signup</Link>}
+        ></Button>
+        <Button
+          nativeButton={false}
+          render={<Link href="/login">Login</Link>}
+        ></Button>
       </div>
     </header>
   );

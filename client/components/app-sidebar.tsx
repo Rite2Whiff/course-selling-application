@@ -24,7 +24,7 @@ export default function AppSidebar() {
             <SidebarMenu className="!gap-5">
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="#" />}
+                  render={<Link href="/dashboard/courses" />}
                   className="text-xl "
                 >
                   <Book className="!size-6" />
@@ -33,7 +33,7 @@ export default function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="#" />}
+                  render={<Link href="/purchases" />}
                   className="text-xl"
                 >
                   <ShoppingCart className="!size-6" />
@@ -42,7 +42,7 @@ export default function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="#" />}
+                  render={<Link href="/app/dashboard/contact" />}
                   className="text-xl"
                 >
                   <Contact className="!size-6" />
