@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+* {
+  --card-spacing: 1.5rem;
+}
+
 body,
 html {
   margin: 0;

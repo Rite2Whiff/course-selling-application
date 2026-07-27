@@ -31,7 +31,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(response.data.user);
       setLoading(false);
     }
-    checkAuth();
+
+    if (localStorage.getItem("token")) {
+      checkAuth();
+    }
   }, [setLoading]);
 
   async function signup(username: string, email: string, password: string) {

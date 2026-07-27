@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import { LoadingProvider } from "./context/LoadingContext";
+import { CourseProvider } from "./context/CourseContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
     >
       <body className="min-h-full  flex flex-col">
         <LoadingProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <CourseProvider>{children}</CourseProvider>
+          </AuthProvider>
         </LoadingProvider>
         <Toaster />
       </body>

@@ -7,11 +7,9 @@ const router = Router();
 router.use(userMiddleware);
 
 router.get("/", async (req, res) => {
-  const userId = req.userId;
-
   const courses = await prisma.course.findMany();
   res.status(200).json({
-    message: courses,
+    courses,
   });
 });
 
