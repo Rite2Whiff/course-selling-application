@@ -1,11 +1,11 @@
 "use client";
 import Navbar from "@/components/navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/app-sidebar";
+import UserSidebar from "@/components/userSidebar";
 import { useAuth } from "../context/AuthContext";
 import { useLoading } from "../context/LoadingContext";
 import Loading from "@/components/loading";
-
+import CreatorSidebar from "@/components/creatorSidebar";
 export default function DashboardLayout({
   children,
 }: {
@@ -20,12 +20,12 @@ export default function DashboardLayout({
       </div>
       <div className="flex flex-1">
         <SidebarProvider>
-          <AppSidebar />
+          {user?.isCreator ? <UserSidebar /> : <CreatorSidebar />}
           <div className="flex-1 p-5">
             {loading ? (
               <Loading />
             ) : (
-              <h2 className="justify-self-end">
+              <h2 className="justify-self-start text-3xl">
                 Welcome Back, {user?.username}
               </h2>
             )}

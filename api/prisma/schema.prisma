@@ -9,20 +9,26 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model User{
   id         Int       @id       @default(autoincrement())
   username   String   @unique
   email      String   @unique
   password   String
   purchases  Purchase[]
+  isCreator  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt 
 }
 
 model Creator{
-  id        Int       @id        @default(autoincrement())
-  username  String    @unique
-  email     String    
-  password  String    @unique
-  courses   Course[]
+  id          Int       @id        @default(autoincrement())
+  username    String    @unique
+  email       String    
+  password    String    @unique
+  courses     Course[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt 
 }
 
 model Course{
@@ -33,6 +39,8 @@ model Course{
   creator         Creator  @relation(fields: [creatorId],references: [id])
   creatorId       Int
   purchases       Purchase[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt 
 }
 
 
@@ -42,4 +50,6 @@ model Purchase{
   userId         Int
   course         Course    @relation(fields:[courseId],references: [id])
   courseId       Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt 
 }

@@ -3,6 +3,8 @@ export interface User {
   username: string;
   email: string;
   password: string;
+  purchases: Purchase[];
+  isCreator: boolean;
 }
 
 export interface Course {
@@ -11,4 +13,11 @@ export interface Course {
   description: string;
   price: number;
   creatorId: number;
+}
+
+export interface Purchase {
+  id: number;
+  userId: number;
+  courseId: number;
+  course: Course;
 }

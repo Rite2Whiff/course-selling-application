@@ -9,10 +9,16 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Book, Contact, ShoppingCart } from "lucide-react";
+import {
+  Book,
+  Contact,
+  ShoppingCart,
+  RotateCcwIcon,
+  Bookmark,
+} from "lucide-react";
 import Link from "next/link";
 
-export default function AppSidebar() {
+export default function Usersidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -33,13 +39,32 @@ export default function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/purchases" />}
+                  render={<Link href="/dashboard/purchases" />}
                   className="text-xl"
                 >
                   <ShoppingCart className="!size-6" />
                   <span>Purchases</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  render={<Link href="/dashboard/purchases" />}
+                  className="text-xl"
+                >
+                  <Bookmark className="!size-6" />
+                  <span>Bookmarks</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  render={<Link href="/dashboard/purchases" />}
+                  className="text-xl"
+                >
+                  <RotateCcwIcon className="!size-6" />
+                  <span>Watch History</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton
                   render={<Link href="/app/dashboard/contact" />}
