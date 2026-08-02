@@ -21,3 +21,13 @@ export interface Purchase {
   courseId: number;
   course: Course;
 }
+
+export interface Creator {
+  id: number;
+  username: string;
+  password: string;
+}
+
+export interface Creator extends Omit<User, "isCreator"> {
+  courses: Course[];
+}

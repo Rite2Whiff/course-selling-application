@@ -1,7 +1,7 @@
 import Router from "express";
 import { prisma } from "../lib/prisma";
 import { creatorSignupSchema, creatorLoginSchema } from "./creator.validation";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { creatorMiddleware } from "./creator.middleware";
 const router = Router();
@@ -41,6 +41,9 @@ router.post("/login", async (req, res) => {
     where: {
       username,
     },
+    include: {
+      courses: true,
+    },
   });
   if (!findCreator) {
     res.status(401).json({
@@ -63,7 +66,13 @@ router.post("/login", async (req, res) => {
   );
 
   res.status(200).json({
+    message: "Creator signed up successfully",
     token,
+    creator: {
+      username: findCreator.username,
+      email: findCreator.username,
+    },
+    courses: findCreator.courses,
   });
 });
 
@@ -156,6 +165,50 @@ router.get("/courses", async (req, res) => {
   res.status(200).json({
     message: "Your courses",
     courses,
+  });
+});
+
+router.get("/me", async (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    res.status(401).json({
+      messgae: "Authorization token is required",
+    });
+    return;
+  }
+  const decoded = jwt.verify(
+    token,
+    process.env.jwtCreator as string,
+  ) as JwtPayload;
+  if (!decoded) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+
+  const findCreator = await prisma.creator.findUnique({
+    where: {
+      id: decoded.userId,
+      username: decoded.username,
+    },
+    include: {
+      courses: true,
+    },
+  });
+
+  if (!findCreator) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
+  res.status(200).json({
+    creator: {
+      username: findCreator.username,
+      email: findCreator.email,
+    },
+    courses: findCreator.courses,
   });
 });
 

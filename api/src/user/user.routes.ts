@@ -4,6 +4,7 @@ import { userLoginSchema, userSignupSchema } from "./user.validation";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { userMiddleware } from "./user.middleware";
+import { email } from "zod";
 const router = Router();
 
 router.post("/signup", async (req, res) => {
@@ -69,7 +70,7 @@ router.post("/login", async (req, res) => {
     process.env.jwtUser as string,
   );
 
-  const courses = findUser.purchases.map((course) => course);
+  const courses = findUser.purchases.map((purchase) => purchase.course);
 
   res.status(200).json({
     message: "Logged in successfully",
@@ -77,6 +78,7 @@ router.post("/login", async (req, res) => {
       id: findUser.id,
       username: findUser.username,
       email: findUser.email,
+      isCreator: findUser.isCreator,
     },
     courses,
     token,
@@ -120,6 +122,8 @@ router.get("/me", userMiddleware, async (req, res) => {
     },
   });
 
+  const courses = findUser?.purchases.map((purchase) => purchase.course);
+
   if (!findUser) {
     res.status(401).json({
       message: "Unauthorized",
@@ -127,7 +131,12 @@ router.get("/me", userMiddleware, async (req, res) => {
     return;
   }
   res.status(200).json({
-    user: findUser,
+    user: {
+      username: findUser.username,
+      email: findUser.email,
+      isCreator: findUser.isCreator,
+    },
+    courses,
   });
 });
 

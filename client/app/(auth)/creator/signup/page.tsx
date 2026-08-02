@@ -10,16 +10,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/app/context/AuthContext";
 import { toast } from "sonner";
+import Link from "next/link";
 
-export default function Signup() {
-  const { signup } = useAuth();
+export default function CreatorSignup() {
+  const { creatorSignup } = useAuth();
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const username = formData.get("username") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const response = await signup(username, email, password);
+    const response = await creatorSignup(username, email, password);
     console.log(response.data);
     toast(response.data.message, { position: "top-center" });
   }
@@ -68,6 +69,12 @@ export default function Signup() {
           </Field>
         </FieldGroup>
       </form>
+      <p>
+        Join as a{" "}
+        <Link className="text-blue-200" href={"/creator/signup"}>
+          Creator
+        </Link>
+      </p>
     </FieldSet>
   );
 }
