@@ -21,7 +21,6 @@ export default function Signup() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const response = await signup(username, email, password);
-    console.log(response.data);
     toast(response.data.message, { position: "top-center" });
   }
 

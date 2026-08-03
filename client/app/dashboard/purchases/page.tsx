@@ -1,5 +1,7 @@
 "use client";
 import { useAuth } from "@/app/context/AuthContext";
+import { useCourse } from "@/app/context/CourseContext";
+import { useLoading } from "@/app/context/LoadingContext";
 import Loading from "@/components/loading";
 import {
   Card,
@@ -13,29 +15,37 @@ import {
 
 export default function Courses() {
   const { user } = useAuth();
-  return (
-    <div className="flex flex-col gap-2">
-      <h2 className="text-2xl self-center">Courses</h2>
-      <div className="grid grid-cols-3 gap-3">
-        {user && user.purchases.length > 0 ? (
-          user.purchases.map((purchase) => {
-            const { course } = purchase;
-            return (
-              <Card key={course.id}>
-                <CardHeader>
-                  <CardTitle>{course.title}</CardTitle>
-                  <CardDescription>{course.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xl">$ {course.price}</p>
-                </CardContent>
-              </Card>
-            );
-          })
-        ) : (
-          <Loading />
-        )}
+
+  if (user && !user.courses) {
+    return (
+      <div>
+        <Loading />
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl self-center">Courses</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {user && user.courses.length > 0 ? (
+            user.courses.map((course) => {
+              return (
+                <Card key={course.id}>
+                  <CardHeader>
+                    <CardTitle>{course.title}</CardTitle>
+                    <CardDescription>{course.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xl">$ {course.price}</p>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            <Loading />
+          )}
+        </div>
+      </div>
+    );
+  }
 }

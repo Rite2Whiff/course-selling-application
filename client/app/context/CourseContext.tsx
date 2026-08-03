@@ -14,14 +14,15 @@ const CourseContext = createContext<CourseContext | null>(null);
 
 export function CourseProvider({ children }: { children: React.ReactNode }) {
   const [courses, setCourses] = useState<Course[] | null>(null);
-  const { user } = useAuth();
+  const { user, creator } = useAuth();
 
   useEffect(() => {
     console.log(user);
-    if (user) {
+    console.log(creator);
+    if (user || creator) {
       getCourses();
     }
-  }, [user]);
+  }, [user, creator]);
 
   async function getCourses() {
     const response = await axios.get("http://localhost:3001/courses", {

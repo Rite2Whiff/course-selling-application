@@ -1,9 +1,7 @@
-import React from "react";
-
 export default function CreatorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div>{children}</div>;
+  return <div className="flex justify-center ">{children}</div>;
 }

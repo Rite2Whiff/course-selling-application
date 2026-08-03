@@ -71,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       username,
       password,
     });
+
     localStorage.setItem("token", response.data.token);
     localStorage.setItem("userRole", "user");
     setUserRole("user");

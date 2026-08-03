@@ -135,8 +135,8 @@ router.get("/me", userMiddleware, async (req, res) => {
       username: findUser.username,
       email: findUser.email,
       isCreator: findUser.isCreator,
+      courses,
     },
-    courses,
   });
 });
 

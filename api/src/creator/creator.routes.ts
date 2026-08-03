@@ -157,7 +157,6 @@ router.get("/courses", async (req, res) => {
   if (!courses) {
     res.status(200).json({
       message: "No courses found",
-      courses: {},
     });
     return;
   }
@@ -203,12 +202,13 @@ router.get("/me", async (req, res) => {
     });
     return;
   }
+
   res.status(200).json({
     creator: {
       username: findCreator.username,
       email: findCreator.email,
+      courses: findCreator.courses,
     },
-    courses: findCreator.courses,
   });
 });
 

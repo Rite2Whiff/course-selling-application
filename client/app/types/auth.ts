@@ -3,7 +3,7 @@ export interface User {
   username: string;
   email: string;
   password: string;
-  purchases: Purchase[];
+  courses: Course[];
   isCreator: boolean;
 }
 
