@@ -1,6 +1,5 @@
 "use client";
 import { useAuth } from "@/app/context/AuthContext";
-import { useCourse } from "@/app/context/CourseContext";
 import { useLoading } from "@/app/context/LoadingContext";
 import Loading from "@/components/loading";
 import {
@@ -12,11 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useEffect } from "react";
 
 export default function Courses() {
   const { user } = useAuth();
+  const { loading } = useLoading();
 
-  if (user && !user.courses) {
+  if (loading) {
     return (
       <div>
         <Loading />

@@ -14,7 +14,7 @@ import {
 
 export default function Courses() {
   const { courses } = useCourse();
-  console.log(courses);
+
   return (
     <div className="flex flex-col gap-2">
       <h2 className="text-2xl self-center">Courses</h2>

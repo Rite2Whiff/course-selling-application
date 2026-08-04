@@ -71,8 +71,8 @@ router.post("/login", async (req, res) => {
     creator: {
       username: findCreator.username,
       email: findCreator.username,
+      courses: findCreator.courses,
     },
-    courses: findCreator.courses,
   });
 });
 

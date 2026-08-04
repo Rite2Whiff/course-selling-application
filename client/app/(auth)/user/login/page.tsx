@@ -17,7 +17,6 @@ export default function Login() {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
     const response = await login(username, password);
-    console.log(response.data);
     toast(response.data.message, { position: "top-center" });
     router.push("/dashboard");
   }

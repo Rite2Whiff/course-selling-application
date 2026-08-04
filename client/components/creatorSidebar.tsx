@@ -33,7 +33,7 @@ export default function CreatorSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/dashboard/purchases" />}
+                  render={<Link href="/dashboard/creator/courses" />}
                   className="text-xl"
                 >
                   <GraduationCap className="!size-6" />
@@ -43,7 +43,7 @@ export default function CreatorSidebar() {
 
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/app/dashboard/contact" />}
+                  render={<Link href="/dashboard/creator/courses/new" />}
                   className="text-xl"
                 >
                   <Plus className="!size-6" />
@@ -52,7 +52,7 @@ export default function CreatorSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/app/dashboard/contact" />}
+                  render={<Link href="/dashboard/creator/courses/edit" />}
                   className="text-xl"
                 >
                   <SquarePen className="!size-6" />
@@ -61,7 +61,7 @@ export default function CreatorSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  render={<Link href="/app/dashboard/contact" />}
+                  render={<Link href="/dashboard/creator/courses/delete" />}
                   className="text-xl"
                 >
                   <Trash className="!size-6" />

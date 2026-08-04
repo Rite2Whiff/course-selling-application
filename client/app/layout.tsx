@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import { LoadingProvider } from "./context/LoadingContext";
 import { CourseProvider } from "./context/CourseContext";
+import { CreatorProvider } from "./context/CreatorContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body className="min-h-full  flex flex-col">
         <LoadingProvider>
           <AuthProvider>
-            <CourseProvider>{children}</CourseProvider>
+            <CourseProvider>
+              <CreatorProvider>{children}</CreatorProvider>
+            </CourseProvider>
           </AuthProvider>
         </LoadingProvider>
         <Toaster />
